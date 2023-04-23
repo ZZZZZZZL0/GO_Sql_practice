@@ -5,11 +5,9 @@ import (
 
 	_ "github.com/duyanghao/gin-apiserver/docs"
 	"github.com/duyanghao/gin-apiserver/pkg/controller"
-	"github.com/duyanghao/gin-apiserver/pkg/log"
-	"github.com/duyanghao/gin-apiserver/pkg/middleware"
+
+	//"github.com/duyanghao/gin-apiserver/pkg/middleware"
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // @title Swagger gin-apiserver
@@ -25,7 +23,17 @@ func InstallRoutes(r *gin.Engine) {
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	r.Use(gin.Recovery())
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	c := controller.Sql_new_Controller()
+	c_name := controller.NewToDoController()
+
+	// ---------------------------------------------------------
+	r.GET("/names/:name", c_name.GetToDo)
+	r.POST("/add", c.SqlAdd)       // http://192.168.1.1:8806/api/v1/users/add
+	r.GET("/get/:id", c.SqlGetID)  // http://192.168.1.1:8806/api/v1/users/get/5
+	r.POST("/update", c.SqlUpdate) // http://192.168.1.1:8806/api/v1/users/update
+	r.POST("/del", c.SqlDel)       // http://192.168.1.1:8806/api/v1/users/del
+	// ---------------------------------------------------------
 
 	// a ping api test
 	r.GET("/ping", controller.Ping)
@@ -35,21 +43,38 @@ func InstallRoutes(r *gin.Engine) {
 
 	// config reload
 	r.Any("/-/reload", func(c *gin.Context) {
-		log.Info("===== Server Stop! Cause: Config Reload. =====")
+		//log.Info("===== Server Stop! Cause: Config Reload. =====")
 		os.Exit(1)
 	})
 
 	rootGroup := r.Group("/api/v1")
-	// AuthRequired middleware that provide basic auth
-	rootGroup.Use(middleware.BasicAuthMiddleware())
-
 	{
 		// a ping api to test basic auth
 		rootGroup.GET("/ping", controller.Ping)
 	}
 
 	{
+		sql_toDoController := controller.Sql_new_Controller()
+		rootGroup.POST("/add", sql_toDoController.SqlAdd)
+	}
+
+	{
+		sql_toDoController := controller.Sql_new_Controller()
+		rootGroup.POST("/del/:id_Del", sql_toDoController.SqlDel)
+	}
+
+	{
+		sql_toDoController := controller.Sql_new_Controller()
+		rootGroup.POST("/update", sql_toDoController.SqlUpdate)
+	}
+
+	{
+		sql_toDoController := controller.Sql_new_Controller()
+		rootGroup.GET("/get/:id_Get", sql_toDoController.SqlGetID)
+	}
+
+	{
 		toDoController := controller.NewToDoController()
-		rootGroup.GET("/todo/get", toDoController.GetToDo)
+		rootGroup.GET("/names/:name", toDoController.GetToDo)
 	}
 }

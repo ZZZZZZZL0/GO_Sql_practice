@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 gin-apiserver
 ===================
 
@@ -177,3 +178,11 @@ pkg/
 ## Refs
 
 * [dump-goroutine-stack-traces](https://colobu.com/2016/12/21/how-to-dump-goroutine-stack-traces/)
+
+## zhulin's try
+
+* It works wiht Sql, and enables the ADD, DELETE, UPDATE, GET.
+=======
+# GO_Sql_practice
+api-framework comes from https://github.com/duyanghao/gin-apiserver
+>>>>>>> b591113c58b73d3dee18490afff5d3e376367296
